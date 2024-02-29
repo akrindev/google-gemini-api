@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "start": "vercel dev",
+    "deploy": "vercel"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1",
+    "ai": "^2.2.37",
+    "dotenv": "^16.4.5",
+    "hono": "^4.0.8"
+  },
+  "devDependencies": {
+    "vercel": "^32.4.1"
+  }
+}
