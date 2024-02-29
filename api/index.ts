@@ -20,7 +20,11 @@ if (!apiKey) {
   throw new Error("GOOGLE_GEMINI_API_KEY is required");
 }
 
-const app = new Hono().basePath("/api").use(logger(), prettyJSON(), cors());
+const app = new Hono()
+  .basePath("/api")
+  .use(logger())
+  .use(prettyJSON())
+  .use("/*", cors());
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
