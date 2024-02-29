@@ -12,6 +12,7 @@ import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
 
 export const config = {
   runtime: "edge",
+  regions: ["sin1"],
 };
 
 const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
