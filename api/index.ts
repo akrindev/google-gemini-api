@@ -56,7 +56,7 @@ app.post("/ai", async (c) => {
         },
       ],
       generationConfig: {
-        maxOutputTokens: 500,
+        maxOutputTokens: 1028,
         temperature: 0.5,
       },
       safetySettings: [
