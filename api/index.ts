@@ -1,14 +1,10 @@
+import { google } from "@ai-sdk/google";
+import { streamText } from "ai";
 import { Hono } from "hono";
-import { handle } from "hono/vercel";
+import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
-import { cors } from "hono/cors";
-import {
-  GoogleGenerativeAI,
-  HarmBlockThreshold,
-  HarmCategory,
-} from "@google/generative-ai";
-import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
+import { handle } from "hono/vercel";
 
 export const config = {
   runtime: "edge",
@@ -27,8 +23,6 @@ const app = new Hono()
   .use(prettyJSON())
   .use("/*", cors());
 
-const genAI = new GoogleGenerativeAI(apiKey);
-
 app.get("/", (c) => {
   return c.json({ message: "Hello Hono!" });
 });
@@ -40,40 +34,14 @@ app.post("/ai", async (c) => {
     return c.json({ message: "Message is required" }, 400);
   }
 
-  const model = await genAI
-    .getGenerativeModel({
-      model: "gemini-pro",
-    })
-    .generateContentStream({
-      contents: [
-        {
-          role: "user",
-          parts: [
-            {
-              text: message,
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        maxOutputTokens: 1028,
-        temperature: 0.5,
-      },
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-      ],
-    });
+  const result = await streamText({
+    model: google("gemini-2.5-flash"),
+    messages: [
+      { role: "user", content: message }
+    ],
+  });
 
-  const stream = GoogleGenerativeAIStream(model);
-
-  return new StreamingTextResponse(stream);
+  return result.toTextStreamResponse();
 });
 
 export default handle(app);
